@@ -1,0 +1,7 @@
+{
+    "base_image_url": "https://transactions.johnnyst.de/image-data",
+    "auth_client_id": "transactions",
+    "auth_issuer": "https://johnnyst.de:8443/realms/applications",
+    "backend_url": "https://transactions.johnnyst.de/api",
+    "redirect_url_web": "https://transactions.johnnyst.de/redirect.html"
+}
