@@ -5,6 +5,7 @@ import 'package:transactions/ui/core/themes/dimens.dart';
 import 'package:transactions/ui/details/details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:transactions/ui/product/product_details_viewmodel.dart';
+import 'package:transactions/ui/product/product_picker.dart';
 import 'package:transactions/ui/product/product_select.dart';
 import 'package:transactions/utils/double_to_string_extension.dart';
 
@@ -94,7 +95,8 @@ class _ProductDetailsState
                     decoration: InputDecoration(label: Text("Name")),
                   ),
                   SizedBox(height: Dimens.vgap),
-                  ProductSelect(
+                  ProductPicker(
+                    label: "Kategorie",
                     repository: context.read(),
                     onSelect: (l) => product.parent = l,
                     initialValue: product.parent,

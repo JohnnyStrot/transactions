@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="120"
+   height="120"
+   viewBox="0 0 120 120"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="CRM.svg"
+   inkscape:export-filename="/home/johnny/icon-crm.png"
+   inkscape:export-xdpi="409.60001"
+   inkscape:export-ydpi="409.60001"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#303030"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="1"
+     inkscape:pagecheckerboard="false"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="2.8575172"
+     inkscape:cx="21.52218"
+     inkscape:cy="14.523097"
+     inkscape:window-width="1854"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showborder="true"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs2">
+    <rect
+       x="10.829441"
+       y="18.413603"
+       width="104.05121"
+       height="92.301774"
+       id="rect3094" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:none;fill-opacity:1;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path5256"
+       cx="48.442032"
+       cy="29.056875"
+       rx="31.393385"
+       ry="16.635229" />
+    <path
+       style="fill:none;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 17.01128,46.398295 c 5.486256,20.150213 57.128791,22.049001 62.810634,0"
+       id="path5978"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 17.01128,63.80461 c 5.486256,20.150213 57.128791,22.049001 62.810634,0"
+       id="path6725"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 17.01128,81.32711 c 5.486256,20.15022 57.128791,22.04901 62.810634,0"
+       id="path6727"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 17.01128,81.32711 V 29.660307"
+       id="path6799" />
+    <path
+       style="fill:none;stroke:#ffb1c2;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 79.821914,81.32711 V 29.660307"
+       id="path6997" />
+    <text
+       xml:space="preserve"
+       id="text3092"
+       style="font-size:24px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';white-space:pre;shape-inside:url(#rect3094);fill:#c68192;fill-opacity:1"
+       transform="translate(44.634191,16.512095)"><tspan
+         x="10.830078"
+         y="92.417212"
+         id="tspan3891"><tspan
+           style="font-weight:bold;font-size:81.3333px;-inkscape-font-specification:'sans-serif, Bold'"
+           id="tspan3889">€</tspan></tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Layer 3"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="g8300"
+     inkscape:label="Layer 3 copy"
+     style="display:inline" />
+</svg>

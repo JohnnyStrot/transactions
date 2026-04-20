@@ -106,8 +106,8 @@ class _TransactionListState
                         icon: Icon(Icons.clear),
                       ),
                     ),
-                    onTap: () {
-                      showBoardDateTimeMultiPicker(
+                    onTap: () async {
+                      var val = await showBoardDateTimeMultiPicker(
                         context: context,
                         dateRangeMode: MultiPickerDateRangeMode.flexible,
                         options: BoardDateTimeOptions(
@@ -120,15 +120,15 @@ class _TransactionListState
                         showDragHandle: true,
 
                         pickerType: DateTimePickerType.date,
-                        onChanged: (val) {
-                          widget.viewmodel.dateFromChanged(val.start);
-                          if (val.end != val.start) {
-                            widget.viewmodel.dateToChanged(val.end);
-                          } else {
-                            widget.viewmodel.dateToChanged(null);
-                          }
-                        },
                       );
+                      if (val != null) {
+                        widget.viewmodel.dateFromChanged(val.start);
+                        if (val.end != val.start) {
+                          widget.viewmodel.dateToChanged(val.end);
+                        } else {
+                          widget.viewmodel.dateToChanged(null);
+                        }
+                      }
                     },
                   );
                 },

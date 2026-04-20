@@ -26,12 +26,8 @@ abstract class DataListViewState<
   M extends DataListViewmodel<T>,
   V extends DataListView<T, M, V>
 >
-    extends State<V> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+    extends State<V>
+    with AutomaticKeepAliveClientMixin {
   Widget buildEntry(BuildContext context, T entity);
   Widget buildSearch(BuildContext context);
 
@@ -39,7 +35,11 @@ abstract class DataListViewState<
   String get route;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final paging = PagingListener(
       controller: widget.viewmodel.pagingController,
       builder: (context, state, fetchNextPage) {

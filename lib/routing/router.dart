@@ -8,6 +8,7 @@ import 'package:transactions/ui/company/company_details_viewmodel.dart';
 import 'package:transactions/ui/company/company_list.dart';
 import 'package:transactions/ui/company/company_list_viewmodel.dart';
 import 'package:transactions/ui/dashboard/dashboard.dart';
+import 'package:transactions/ui/dashboard/dashboard_viewmodel.dart';
 import 'package:transactions/ui/product/product_details_viewmodel.dart';
 import 'package:transactions/ui/product/product_details.dart';
 import 'package:transactions/ui/product/product_list.dart';
@@ -46,14 +47,7 @@ final dataRoutes = [
                 transactionPartnerRepository: context.read(),
               );
           vm.createEntity.execute();
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) return;
-              GoRouter.of(context).pop(vm.entity);
-            },
-            child: TransactionPartnerDetails(viewmodel: vm),
-          );
+          return TransactionPartnerDetails(viewmodel: vm);
         },
       ),
       GoRoute(
@@ -86,14 +80,7 @@ final dataRoutes = [
           );
           vm.createEntity.execute();
 
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) return;
-              GoRouter.of(context).pop(vm.entity);
-            },
-            child: ProductDetails(viewmodel: vm),
-          );
+          return ProductDetails(viewmodel: vm);
         },
       ),
       GoRoute(
@@ -123,14 +110,7 @@ final dataRoutes = [
             companyRepository: context.read(),
           );
           vm.createEntity.execute();
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) return;
-              GoRouter.of(context).pop(vm.entity);
-            },
-            child: CompanyDetails(viewmodel: vm),
-          );
+          return CompanyDetails(viewmodel: vm);
         },
       ),
       GoRoute(
@@ -162,14 +142,7 @@ final dataRoutes = [
             transactionRepository: context.read(),
           );
           vm.createEntity.execute();
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) return;
-              GoRouter.of(context).pop(vm.entity);
-            },
-            child: TransactionDetails(viewmodel: vm),
-          );
+          return TransactionDetails(viewmodel: vm);
         },
       ),
       GoRoute(
@@ -204,7 +177,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       routes: [
         GoRoute(
           path: Routes.dashboard,
-          builder: (context, state) => Dashboard(),
+          builder: (context, state) => Dashboard(
+            viewmodel: DashboardViewmodel(repository: context.read()),
+          ),
         ),
         GoRoute(
           path: Routes.data,
@@ -237,7 +212,7 @@ Future<String?> _redirect(BuildContext context, GoRouterState state) async {
   // if the user is logged in but still on the login page, send them to
   // the home page
   if (loggingIn) {
-    return Routes.home;
+    return Routes.dashboard;
   }
 
   // no need to redirect at all

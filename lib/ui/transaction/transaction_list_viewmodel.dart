@@ -1,3 +1,4 @@
+import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter_command/flutter_command.dart';
 import 'package:transactions/data/model/transaction.dart';
 import 'package:transactions/data/repositories/transaction/transaction_repository.dart';
@@ -37,9 +38,9 @@ class TransactionListViewmodel extends DataListViewmodel<Transaction> {
 
   String get dateSearch => [
     if (_searchDateFrom != null)
-      _searchDateFrom!.toIso8601String().substring(0, 10),
+      BoardDateFormat("yyyy-MM-dd HH:mm:ss").format(_searchDateFrom!),
     if (_searchDateTo != null)
-      _searchDateTo!.toIso8601String().substring(0, 10),
+      BoardDateFormat("yyyy-MM-dd HH:mm:ss").format(_searchDateTo!),
   ].join(" - ");
 
   @override

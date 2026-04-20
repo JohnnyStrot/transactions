@@ -27,6 +27,7 @@ class TransactionPartner extends StrongEntity implements Addressable {
         city: (json['city'] ?? "") as String,
         street: (json['street'] ?? "") as String,
         houseNumber: (json['house_number'] ?? "") as String,
+        favorite: json["favorite"] ?? false,
         transactions: ToMany.fromJson(
           json["transactions"],
           Transaction.fromJson,
@@ -65,6 +66,7 @@ class TransactionPartner extends StrongEntity implements Addressable {
       'city': city,
       'street': street,
       'house_number': houseNumber,
+      'favorite': favorite,
       'transactions': _transactions.toJson(),
     };
     a.addEntries([_company.toJson("company")]);

@@ -1,3 +1,4 @@
+import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:transactions/data/model/transaction.dart';
 import 'package:transactions/data/model/transaction_part.dart';
@@ -7,9 +8,9 @@ import 'package:transactions/ui/details/details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:transactions/ui/product/product_picker.dart';
 import 'package:transactions/ui/transaction/transaction_details_viewmodel.dart';
-import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:transactions/ui/transaction_partner/transaction_partner_picker.dart';
 import 'package:transactions/utils/double_to_string_extension.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 class TransactionDetails
     extends
@@ -32,18 +33,28 @@ class _TransactionDetailsState
           TransactionDetailsViewmodel
         >
     with SingleTickerProviderStateMixin {
-  ValueNotifier<DateTime> dateChanged = ValueNotifier(DateTime.now());
+  // ValueNotifier<DateTime> dateChanged = ValueNotifier(DateTime.now());
 
   TransactionPart? editingPart;
   late TabController tabController;
+  TextEditingController timestampController = TextEditingController();
 
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
-    dateChanged.addListener(() {
-      widget.viewmodel.entity?.timestamp = dateChanged.value;
-    });
+    widget.viewmodel.loadEntity.addListener(setTimestampText);
+    widget.viewmodel.createEntity.addListener(setTimestampText);
     super.initState();
+  }
+
+  void setTimestampText() {
+    if (widget.viewmodel.entity == null) {
+      timestampController.text = "";
+    } else {
+      timestampController.text = BoardDateFormat(
+        "yyyy-MM-dd HH:mm:ss",
+      ).format(widget.viewmodel.entity!.timestamp);
+    }
   }
 
   @override
@@ -97,6 +108,7 @@ class _TransactionDetailsState
               ),
               body: TabBarView(
                 controller: tabController,
+
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,30 +122,29 @@ class _TransactionDetailsState
                         ),
                         child: Column(
                           children: [
-                            BoardDateTimeInputField(
+                            TextFormField(
+                              readOnly: true,
                               decoration: InputDecoration(
                                 labelText: "Zeitstempel",
                               ),
-                              options: BoardDateTimeOptions(
-                                withSecond: true,
-                                boardTitle: "Zeitstempel",
-                                languages: BoardPickerLanguages(
-                                  today: "Heute",
-                                  tomorrow: "Morgen",
-                                  yesterday: "Gestern",
-                                  now: "Jetzt",
-                                  locale: "de",
-                                ),
-                                actionButtonTypes: [
-                                  BoardDateButtonType.yesterday,
-                                  BoardDateButtonType.today,
-                                  BoardDateButtonType.tomorrow,
-                                ],
-                                pickerFormat: PickerFormat.dmy,
-                                startDayOfWeek: DateTime.monday,
-                              ),
-                              initialDate: transaction.timestamp,
-                              onChanged: (date) => transaction.timestamp = date,
+                              controller: timestampController,
+                              onTap: () async {
+                                DateTime? dateTime =
+                                    await showOmniDateTimePicker(
+                                      context: context,
+                                      initialDate: transaction.timestamp,
+                                      is24HourMode: true,
+                                      isShowSeconds: true,
+                                    );
+                                if (dateTime != null) {
+                                  debugPrint(dateTime.toIso8601String());
+                                  setState(() {
+                                    transaction.timestamp = dateTime;
+                                    setTimestampText();
+                                  });
+                                }
+                                debugPrint("null");
+                              },
                             ),
                             SizedBox(height: Dimens.vgap),
                             TextFormField(
@@ -239,25 +250,26 @@ class _TransactionDetailsState
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: transaction.transactionParts.length,
-            itemBuilder: (context, index) {
-              var part = transaction.transactionParts[index];
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: Dimens.vgap / 2),
-                decoration: BoxDecoration(
-                  border: BoxBorder.symmetric(
-                    horizontal: BorderSide(
-                      color: ColorScheme.of(context).onSurface.withAlpha(40),
-                      width: 1,
+          child: ListView(
+            children: [
+              for (var part in transaction.transactionParts)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: Dimens.vgap / 2,
+                  ),
+                  decoration: BoxDecoration(
+                    border: BoxBorder.symmetric(
+                      horizontal: BorderSide(
+                        color: ColorScheme.of(context).onSurface.withAlpha(40),
+                        width: 1,
+                      ),
                     ),
                   ),
+                  child: part == editingPart && canEdit
+                      ? partEditingRow(part)
+                      : partDisplayRow(part, canEdit),
                 ),
-                child: part == editingPart && canEdit
-                    ? partEditingRow(part)
-                    : partDisplayRow(part, canEdit),
-              );
-            },
+            ],
           ),
         ),
       ],
@@ -269,61 +281,66 @@ class _TransactionDetailsState
     child: Column(
       spacing: Dimens.vgap,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(onPressed: finishEditing, icon: Icon(Icons.done)),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            spacing: Dimens.hgap,
+            children: [
+              Expanded(
+                child: TextFormField(
+                  key: Key("${part.id.toString()}-value"),
+                  initialValue: part.value.toReadableString(),
+                  keyboardType: TextInputType.number,
+                  validator: (value) =>
+                      value == null || double.tryParse(value) != null
+                      ? null
+                      : "Ungültige Zahl",
+                  decoration: InputDecoration(labelText: "Wert"),
+                  onChanged: (value) {
+                    var v = double.tryParse(value);
+                    if (v != null) {
+                      part.value = v;
+                    }
+                  },
+                ),
+              ),
+              Expanded(
+                child: TextFormField(
+                  key: Key("${part.id.toString()}-amount"),
+                  initialValue: part.amount?.toReadableString(),
+                  keyboardType: TextInputType.number,
+                  validator: (value) =>
+                      value == null ||
+                          value.isEmpty ||
+                          double.tryParse(value) != null
+                      ? null
+                      : "Ungültige Zahl",
+                  decoration: InputDecoration(labelText: "Menge"),
+                  onChanged: (value) {
+                    part.amount = double.tryParse(value);
+                  },
+                ),
+              ),
+              IconButton(onPressed: finishEditing, icon: Icon(Icons.done)),
+            ],
+          ),
         ),
-        Row(
-          spacing: Dimens.hgap,
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: part.value.toReadableString(),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || double.tryParse(value) != null
-                    ? null
-                    : "Ungültige Zahl",
-                decoration: InputDecoration(labelText: "Wert"),
-                onChanged: (value) {
-                  var v = double.tryParse(value);
-                  if (v != null) {
-                    part.value = v;
-                  }
-                },
-              ),
-            ),
-            Expanded(
-              child: TextFormField(
-                initialValue: part.amount?.toReadableString(),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || double.tryParse(value) != null
-                    ? null
-                    : "Ungültige Zahl",
-                decoration: InputDecoration(labelText: "Menge"),
-                onChanged: (value) {
-                  part.amount = double.tryParse(value);
-                },
-              ),
-            ),
-          ],
+        ProductPicker(
+          key: Key("${part.id.toString()}-product"),
+          label: "Produkt",
+          repository: context.read(),
+          onSelect: (l) => part.product = l,
+          initialValue: part.product,
         ),
         TextFormField(
+          key: Key("${part.id.toString()}-purpose"),
           initialValue: part.purpose,
           validator: (value) =>
-              value != null && value.length > 127 ? null : "Max. 127 Zeichen",
+              value != null && value.length <= 127 ? null : "Max. 127 Zeichen",
           decoration: InputDecoration(labelText: "Inhalt"),
           onChanged: (value) {
             part.purpose = value;
           },
-        ),
-        ProductPicker(
-          repository: context.read(),
-          onSelect: (l) => part.product = l,
-          initialValue: part.product,
         ),
       ],
     ),
@@ -333,6 +350,21 @@ class _TransactionDetailsState
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       SizedBox(width: 70, child: PriceBadge(part.value)),
+      SizedBox(
+        width: 36,
+        child: part.product == null
+            ? SizedBox()
+            : part.product!.imageLink.isNotEmpty
+            ? Image.network(
+                part.product!.imageLink,
+                width: 32,
+                height: 32,
+                alignment: AlignmentGeometry.center,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.shopping_bag, size: 32),
+              )
+            : Icon(Icons.shopping_bag, size: 32),
+      ),
       Expanded(flex: 3, child: Text(partContentText(part), softWrap: true)),
       if (canEdit)
         IconButton(onPressed: () => editPart(part), icon: Icon(Icons.edit)),

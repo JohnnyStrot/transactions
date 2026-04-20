@@ -1,11 +1,14 @@
 import 'package:flutter_command/flutter_command.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:transactions/data/model/transaction_partner.dart';
 import 'package:transactions/data/repositories/data_repository.dart';
 import 'package:transactions/data/repositories/transaction_partner/transaction_partner_repository.dart';
 import 'package:transactions/routing/routes.dart';
 import 'package:transactions/ui/core/themes/dimens.dart';
+import 'package:transactions/ui/transaction_partner/transaction_partner_details.dart';
+import 'package:transactions/ui/transaction_partner/transaction_partner_details_viewmodel.dart';
 import 'package:transactions/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -85,10 +88,12 @@ class TransactionPartnerPickerState extends State<TransactionPartnerPicker> {
   }
 
   void select(TransactionPartner? l) {
-    setState(() {
-      currentValue = l;
-      widget.onSelect(l);
-    });
+    widget.onSelect(l);
+    if (context.mounted) {
+      setState(() {
+        currentValue = l;
+      });
+    }
   }
 
   Future<List<TransactionPartner>> getData(
@@ -107,9 +112,24 @@ class TransactionPartnerPickerState extends State<TransactionPartnerPicker> {
   }
 
   void addPartner(BuildContext context) async {
-    var p = await GoRouter.of(
+    TransactionPartnerDetailsViewmodel vm = TransactionPartnerDetailsViewmodel(
+      transactionPartnerRepository: context.read(),
+    );
+    vm.createEntity.execute();
+
+    var p = await Navigator.push(
       context,
-    ).push("${Routes.transactionPartners}${Routes.create}");
+      MaterialPageRoute(
+        builder: (context) => PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            Navigator.pop(context, vm.entity);
+          },
+          child: TransactionPartnerDetails(viewmodel: vm),
+        ),
+      ),
+    );
     if (p != null && p is TransactionPartner) {
       select(p);
       if (context.mounted) {
@@ -211,7 +231,13 @@ class TransactionPartnerPickerState extends State<TransactionPartnerPicker> {
         select(entity);
         Navigator.pop(context);
       },
-      leading: Icon(Icons.group, size: 32),
+      leading: entity.favorite
+          ? Badge(
+              label: Icon(Icons.star, size: 12),
+              backgroundColor: Colors.amber,
+              child: Icon(Icons.group, size: 32),
+            )
+          : Icon(Icons.group, size: 32),
       /*entity.imageLink.isNotEmpty
           ? Image.network(
               entity.imageLink,

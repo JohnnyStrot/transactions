@@ -1,11 +1,12 @@
 import 'package:flutter_command/flutter_command.dart';
-import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:transactions/data/model/product.dart';
 import 'package:transactions/data/repositories/data_repository.dart';
 import 'package:transactions/data/repositories/product/product_repository.dart';
-import 'package:transactions/routing/routes.dart';
 import 'package:transactions/ui/core/themes/dimens.dart';
+import 'package:transactions/ui/product/product_details.dart';
+import 'package:transactions/ui/product/product_details_viewmodel.dart';
 import 'package:transactions/utils/double_to_string_extension.dart';
 import 'package:transactions/utils/result.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class ProductPicker extends StatefulWidget {
     required this.repository,
     required this.onSelect,
     this.initialValue,
+    this.label,
   });
 
   final ProductRepository repository;
@@ -24,6 +26,8 @@ class ProductPicker extends StatefulWidget {
   final void Function(Product? l) onSelect;
 
   final Product? initialValue;
+
+  final String? label;
 
   Future<Result<List<Product>>> getEntities(
     String filterName,
@@ -109,9 +113,24 @@ class ProductPickerState extends State<ProductPicker> {
   }
 
   void addProduct(BuildContext context) async {
-    var p = await GoRouter.of(
+    ProductDetailsViewmodel vm = ProductDetailsViewmodel(
+      productRepository: context.read(),
+    );
+    vm.createEntity.execute();
+
+    var p = await Navigator.push(
       context,
-    ).push("${Routes.products}${Routes.create}");
+      MaterialPageRoute(
+        builder: (context) => PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            Navigator.pop(context, vm.entity);
+          },
+          child: ProductDetails(viewmodel: vm),
+        ),
+      ),
+    );
     if (p != null && p is Product) {
       select(p);
       if (context.mounted) {
@@ -202,6 +221,7 @@ class ProductPickerState extends State<ProductPicker> {
     return TextField(
       controller: TextEditingController(text: entityAsString(currentValue)),
       decoration: InputDecoration(
+        labelText: widget.label,
         suffixIcon: IconButton(
           onPressed: () => select(null),
           icon: Icon(Icons.clear),
@@ -212,21 +232,28 @@ class ProductPickerState extends State<ProductPicker> {
   }
 
   Widget buildEntry(BuildContext context, Product entity) {
+    var icon = entity.imageLink.isNotEmpty
+        ? Image.network(
+            entity.imageLink,
+            width: 32,
+            height: 32,
+            alignment: AlignmentGeometry.center,
+            errorBuilder: (context, error, stackTrace) =>
+                Icon(Icons.shopping_bag, size: 32),
+          )
+        : Icon(Icons.shopping_bag, size: 32);
     return ListTile(
       onTap: () {
         select(entity);
         Navigator.pop(context);
       },
-      leading: entity.imageLink.isNotEmpty
-          ? Image.network(
-              entity.imageLink,
-              width: 32,
-              height: 32,
-              alignment: AlignmentGeometry.center,
-              errorBuilder: (context, error, stackTrace) =>
-                  Icon(Icons.shopping_bag, size: 32),
+      leading: entity.favorite
+          ? Badge(
+              label: Icon(Icons.star, size: 12),
+              backgroundColor: Colors.amber,
+              child: icon,
             )
-          : Icon(Icons.shopping_bag, size: 32),
+          : icon,
       title: Text(
         "${entity.producer?.name.isNotEmpty ?? false ? "${entity.producer!.name} " : ""}${entity.name}",
         style: TextStyle(fontWeight: FontWeight.bold),

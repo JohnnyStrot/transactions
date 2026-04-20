@@ -1,3 +1,4 @@
+import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
@@ -27,28 +28,44 @@ class TransactionListEntry extends EntityListEntry<Transaction> {
         Row(
           spacing: Dimens.hgap,
           children: [
-            Expanded(child: Text(entity.timestamp.toString())),
+            Expanded(
+              child: Text(
+                BoardDateFormat("yyyy-MM-dd HH:mm:ss").format(entity.timestamp),
+              ),
+            ),
             PriceBadge(entity.value, bold: true),
           ],
         ),
-        Text.rich(
-          overflow: TextOverflow.ellipsis,
-          TextSpan(
-            children: [
-              if (entity.transactionPartner != null)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text.rich(
+                overflow: TextOverflow.ellipsis,
                 TextSpan(
-                  text: entity.transactionPartner!.title,
-                  style: TextTheme.of(
-                    context,
-                  ).bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                  children: [
+                    if (entity.transactionPartner != null)
+                      TextSpan(
+                        text: entity.transactionPartner!.title,
+                        style: TextTheme.of(
+                          context,
+                        ).bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    if ((entity.transactionPartner?.subtitle ?? "").isNotEmpty)
+                      TextSpan(text: " ${entity.transactionPartner!.subtitle}"),
+                    if (entity.transactionPartner != null &&
+                        entity.transactionPartner!.city.isNotEmpty)
+                      TextSpan(text: ", ${entity.transactionPartner!.city}"),
+                  ],
                 ),
-              if ((entity.transactionPartner?.subtitle ?? "").isNotEmpty)
-                TextSpan(text: " ${entity.transactionPartner!.subtitle}"),
-              if (entity.transactionPartner != null &&
-                  entity.transactionPartner!.city.isNotEmpty)
-                TextSpan(text: ", ${entity.transactionPartner!.city}"),
-            ],
-          ),
+              ),
+            ),
+            if (entity.remark.isNotEmpty)
+              Text(
+                entity.remark,
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+          ],
         ),
       ],
     );

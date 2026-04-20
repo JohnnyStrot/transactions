@@ -1,5 +1,6 @@
 import 'package:provider/provider.dart';
 import 'package:transactions/data/model/transaction_partner.dart';
+import 'package:transactions/ui/company/company_picker.dart';
 import 'package:transactions/ui/company/company_select.dart';
 import 'package:transactions/ui/core/themes/dimens.dart';
 import 'package:transactions/ui/core/ui/address_input.dart';
@@ -71,7 +72,22 @@ class _TransactionPartnerDetailsState
                     ),
                   ),
                 ),
+                actions: [
+                  IconButton(
+                    onPressed: () => setState(() {
+                      transactionPartner.favorite =
+                          !transactionPartner.favorite;
+                    }),
+                    icon: Icon(
+                      Icons.star,
+                      color: transactionPartner.favorite
+                          ? Colors.amber
+                          : ColorScheme.of(context).onPrimaryContainer,
+                    ),
+                  ),
+                ],
               ),
+
               body: ListView(
                 padding: EdgeInsets.symmetric(
                   vertical: Dimens.of(context).paddingScreenVertical,
@@ -86,7 +102,7 @@ class _TransactionPartnerDetailsState
                     decoration: InputDecoration(label: Text("Name")),
                   ),
                   SizedBox(height: Dimens.vgap),
-                  CompanySelect(
+                  CompanyPicker(
                     repository: context.read(),
                     initialValue: transactionPartner.company,
                     onSelect: (l) => transactionPartner.company = l,

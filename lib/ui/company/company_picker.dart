@@ -1,10 +1,13 @@
 import 'package:flutter_command/flutter_command.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:transactions/data/model/company.dart';
 import 'package:transactions/data/repositories/data_repository.dart';
 import 'package:transactions/data/repositories/company/company_repository.dart';
 import 'package:transactions/routing/routes.dart';
+import 'package:transactions/ui/company/company_details.dart';
+import 'package:transactions/ui/company/company_details_viewmodel.dart';
 import 'package:transactions/ui/core/themes/dimens.dart';
 import 'package:transactions/utils/result.dart';
 import 'package:flutter/material.dart';
@@ -95,9 +98,24 @@ class CompanyPickerState extends State<CompanyPicker> {
   }
 
   void addCompany(BuildContext context) async {
-    var p = await GoRouter.of(
+    CompanyDetailsViewmodel vm = CompanyDetailsViewmodel(
+      companyRepository: context.read(),
+    );
+    vm.createEntity.execute();
+
+    var p = await Navigator.push(
       context,
-    ).push("${Routes.companies}${Routes.create}");
+      MaterialPageRoute(
+        builder: (context) => PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            Navigator.pop(context, vm.entity);
+          },
+          child: CompanyDetails(viewmodel: vm),
+        ),
+      ),
+    );
     if (p != null && p is Company) {
       select(p);
       if (context.mounted) {
