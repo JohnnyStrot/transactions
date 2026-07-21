@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:transactions/data/model/product.dart';
 import 'package:transactions/data/model/transaction_partner.dart';
 import 'package:transactions/data/repositories/analysis/analysis_repository.dart';
 import 'package:transactions/data/services/api/api_service.dart';
@@ -22,7 +23,9 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
         )
         .then((response) {
           var res = jsonDecode(response.body);
-
+          if (res["sum"] is int) {
+            res["sum"] = res["sum"].toDouble();
+          }
           return Result<double>.ok(res["sum"]);
         })
         .catchError((err) {
@@ -168,6 +171,93 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
         .catchError((err) {
           print(err);
           return Result<List<(DateTime, double)>>.error(Exception(err));
+        });
+  }
+
+  @override
+  Future<Result<double>> sumExpInc(
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    bool income,
+  ) {
+    return apiService
+        .get(
+          "analysis/sum-exp-inc",
+          params: {
+            if (dateFrom != null) "dateFrom": dateFrom.toIso8601String(),
+            if (dateTo != null) "dateTo": dateTo.toIso8601String(),
+            if (income) "income": 1,
+          },
+        )
+        .then((response) {
+          var res = jsonDecode(response.body);
+          if (res["sum"] is int) {
+            res["sum"] = res["sum"].toDouble();
+          }
+          return Result<double>.ok(res["sum"]);
+        })
+        .catchError((err) {
+          print(err);
+          return Result<double>.error(Exception(err));
+        });
+  }
+
+  @override
+  Future<Result<List<(Product?, double)>>> productChildrenSum(
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    bool income,
+    Product? parent, {
+    int? top,
+  }) {
+    return apiService
+        .get(
+          "analysis/product-children-sum",
+          params: {
+            if (dateFrom != null) "dateFrom": dateFrom.toIso8601String(),
+            if (dateTo != null) "dateTo": dateTo.toIso8601String(),
+            if (income) "income": 1,
+            if (parent != null) "id": parent.id,
+          },
+        )
+        .then((response) {
+          var res = jsonDecode(response.body);
+          res = (res as List<dynamic>).map((c) {
+            if (c["sum"] is int) {
+              c["sum"] = c["sum"].toDouble();
+            }
+            if (c["product"] != null) {
+              c["product"] = Product.fromJson(c["product"]);
+            }
+            return (c["product"], double.parse(c["sum"])) as (Product?, double);
+          }).toList();
+          res.sort((a, b) => b.$2.abs().compareTo(a.$2.abs()));
+
+          if (top != null) {
+            var otherSum = res
+                .where((element) => element.$1 != null)
+                .skip(top)
+                .fold(
+                  0.0,
+                  (previousValue, element) => previousValue + element.$2,
+                );
+            var noProd = res
+                .take(top)
+                .firstWhere((element) => element.$1 == null);
+            if (noProd != null) {
+              otherSum += noProd.$2;
+            }
+            res = res.where((element) => element.$1 != null).take(top).toList();
+            res.add((null, otherSum));
+          }
+
+          return Result<List<(Product?, double)>>.ok(
+            res as List<(Product?, double)>,
+          );
+        })
+        .catchError((err) {
+          print(err);
+          return Result<List<(Product?, double)>>.error(Exception(err));
         });
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:transactions/data/repositories/auth/auth_repository.dart';
+import 'package:transactions/ui/analysis/analysis_page.dart';
+import 'package:transactions/ui/analysis/analysis_viewmodel.dart';
 import 'package:transactions/ui/auth/login/login_viewmodel.dart';
 import 'package:transactions/ui/company/company_details.dart';
 import 'package:transactions/ui/company/company_details_viewmodel.dart';
@@ -162,6 +164,15 @@ final dataRoutes = [
   ),
 ];
 
+final analysisRoute = GoRoute(
+  path: Routes.analysis,
+  builder: (context, state) {
+    final viewModel = AnalysisViewmodel(repository: context.read());
+    return AnalysisPage(viewmodel: viewModel);
+  },
+  routes: [],
+);
+
 GoRouter router(AuthRepository authRepository) => GoRouter(
   refreshListenable: authRepository,
   navigatorKey: _rootNavigatorKey,
@@ -188,6 +199,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           },
           routes: dataRoutes,
         ),
+        analysisRoute,
       ],
     ),
     GoRoute(

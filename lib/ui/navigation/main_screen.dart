@@ -25,6 +25,12 @@ class _MainScreenState extends State<MainScreen> {
       label: "Dashboard",
     ),
     NavBarCategory(
+      location: Routes.analysis,
+      icon: Icon(Icons.analytics_outlined),
+      activeIcon: Icon(Icons.analytics),
+      label: "Analyse",
+    ),
+    NavBarCategory(
       icon: Icon(Icons.table_chart_outlined),
       activeIcon: Icon(Icons.table_chart),
       label: 'Daten',

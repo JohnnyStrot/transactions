@@ -4,6 +4,8 @@ import 'package:material_duration_picker/material_duration_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:transactions/data/services/api/auth_api_client.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
 import 'main_development.dart' as development;
 import 'routing/router.dart';
 import 'ui/core/localization/applocalization.dart';
@@ -12,7 +14,7 @@ import 'ui/core/themes/theme.dart';
 /// Default main method
 void main() {
   // Launch development config by default
-  development.main();
+  initializeDateFormatting('de_DE', null).then((_) => development.main());
 }
 
 class MainApp extends StatelessWidget {

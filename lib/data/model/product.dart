@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:transactions/data/model/company.dart';
 import 'package:transactions/data/model/entity.dart';
 import 'package:transactions/data/model/to_many.dart';
@@ -19,6 +20,7 @@ class Product extends StrongEntity {
     this.vegan,
     this.lactoseFree,
     this.glutenFree,
+    this.color = Colors.grey,
     this.favorite = false,
     required ToOne<Company> producer,
     required ToMany<TransactionPart> transactionParts,
@@ -46,6 +48,7 @@ class Product extends StrongEntity {
     lactoseFree: json["lactose_free"],
     glutenFree: json["gluten_free"],
     favorite: json["favorite"] ?? false,
+    color: Color(json["color"] ?? Colors.grey.toARGB32()),
     transactionParts: ToMany.fromJson(
       json["transaction_parts"],
       TransactionPart.fromJson,
@@ -70,6 +73,7 @@ class Product extends StrongEntity {
   bool? lactoseFree;
   bool? glutenFree;
   bool favorite;
+  Color color;
 
   ToOne<Company> _producer;
   Company? get producer => _producer.entity;
@@ -87,6 +91,7 @@ class Product extends StrongEntity {
   }
 
   ToMany<Product> _children;
+
   List<Product?> get children => _children.entities;
 
   @override
@@ -108,6 +113,7 @@ class Product extends StrongEntity {
       'gluten_free': glutenFree,
       'transaction_parts': _transactionParts.toJson(),
       'children': _children.toJson(),
+      'color': color.toARGB32(),
     };
     a.addEntries([_producer.toJson("producer"), _parent.toJson("parent")]);
     return a;

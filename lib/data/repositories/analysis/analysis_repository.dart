@@ -1,3 +1,4 @@
+import 'package:transactions/data/model/product.dart';
 import 'package:transactions/data/model/transaction_partner.dart';
 import 'package:transactions/utils/result.dart';
 
@@ -21,4 +22,17 @@ abstract class AnalysisRepository {
     DateTime? dateFrom,
     DateTime? dateTo,
   );
+
+  Future<Result<double>> sumExpInc(
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    bool income,
+  );
+  Future<Result<List<(Product?, double)>>> productChildrenSum(
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    bool income,
+    Product? parent, {
+    int? top,
+  });
 }
