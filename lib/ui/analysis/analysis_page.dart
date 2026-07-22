@@ -6,6 +6,7 @@ import 'package:transactions/data/model/product.dart';
 import 'package:transactions/ui/analysis/analysis_interval.dart';
 import 'package:transactions/ui/analysis/analysis_interval_size.dart';
 import 'package:transactions/ui/analysis/analysis_viewmodel.dart';
+import 'package:transactions/ui/analysis/product_pie_analysis.dart';
 import 'package:transactions/ui/core/themes/dimens.dart';
 import 'package:transactions/utils/double_to_string_extension.dart';
 import 'package:transactions/utils/result.dart';
@@ -42,6 +43,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   intervalSelect(context),
                 ],
               ),
+              SizedBox(height: 8.0),
               IntervalSums(viewmodel: widget.viewmodel),
             ],
           ),
@@ -144,6 +146,7 @@ class _IntervalSumsState extends State<IntervalSums> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8.0,
       children: [
         Container(
           constraints: BoxConstraints(maxHeight: 225),
@@ -208,19 +211,35 @@ class _IntervalSumsState extends State<IntervalSums> {
   Widget buildItem(BuildContext context, AnalysisInterval interval, int index) {
     return Row(
       children: [
-        Expanded(child: cards(interval, false)),
-        Expanded(child: cards(interval, true)),
+        Expanded(child: cards(context, interval, false)),
+        Expanded(child: cards(context, interval, true)),
       ],
     );
   }
 
-  void navigateToDeepAnalysis(AnalysisInterval interval, bool income) {}
+  void navigateToProductPieAnalysis(
+    BuildContext context,
+    AnalysisInterval interval,
+    bool income,
+  ) {
+    widget.viewmodel.changeProduct(null);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            ProductPieAnalysis(viewmodel: widget.viewmodel, income: income),
+      ),
+    );
+  }
 
-  Widget cards(AnalysisInterval interval, bool income) => Card.filled(
+  Widget cards(
+    BuildContext context,
+    AnalysisInterval interval,
+    bool income,
+  ) => Card.filled(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     child: InkWell(
       borderRadius: BorderRadius.circular(8),
-      onTap: () => navigateToDeepAnalysis(interval, income),
+      onTap: () => navigateToProductPieAnalysis(context, interval, income),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -233,11 +252,7 @@ class _IntervalSumsState extends State<IntervalSums> {
               ),
             ),
             FutureBuilder(
-              future: widget.viewmodel.repository.sumExpInc(
-                interval.intervalStart,
-                interval.intervalEnd,
-                income,
-              ),
+              future: widget.viewmodel.getSum(interval, null, income),
               builder: (context, snapshot) {
                 switch (snapshot.data) {
                   case null:
@@ -271,16 +286,17 @@ class _IntervalSumsState extends State<IntervalSums> {
                 switch (snapshot.data) {
                   case null:
                     return LinearProgressIndicator();
-                  case Ok<List<(Product?, double)>>():
+                  case Ok<List<(Product?, double, num)>>():
                     var data =
-                        (snapshot.data as Ok<List<(Product?, double)>>).value;
+                        (snapshot.data as Ok<List<(Product?, double, num)>>)
+                            .value;
                     return Column(
                       spacing: 6,
                       children: [
                         Row(
                           spacing: 2,
                           children: [
-                            for (var (p, d) in data)
+                            for (var (p, d, n) in data)
                               Expanded(
                                 flex: d.abs().ceil(),
                                 child: Container(
@@ -294,7 +310,7 @@ class _IntervalSumsState extends State<IntervalSums> {
                           ],
                         ),
                         SizedBox(),
-                        for (var (p, _) in data)
+                        for (var (p, _, _) in data)
                           Row(
                             spacing: 6,
                             children: [
@@ -317,9 +333,9 @@ class _IntervalSumsState extends State<IntervalSums> {
                           ),
                       ],
                     );
-                  case Error<List<(Product?, double)>>():
+                  case Error<List<(Product?, double, num)>>():
                     return Text(
-                      "Error: ${(snapshot.data as Error<List<(Product?, double)>>).error}",
+                      "Error: ${(snapshot.data as Error<List<(Product?, double, num)>>).error}",
                     );
                 }
               },

@@ -12,6 +12,16 @@ class AnalysisInterval {
   int intervalIndex;
   AnalysisIntervalSize intervalSize;
 
+  @override
+  bool operator ==(Object other) {
+    return runtimeType == other.runtimeType &&
+        intervalIndex == (other as AnalysisInterval).intervalIndex &&
+        intervalSize == other.intervalSize;
+  }
+
+  @override
+  int get hashCode => (intervalIndex, intervalSize).hashCode;
+
   DateTime get intervalStart {
     DateTime date = DateTime.now();
     switch (intervalSize) {

@@ -27,8 +27,9 @@ abstract class AnalysisRepository {
     DateTime? dateFrom,
     DateTime? dateTo,
     bool income,
+    Product? product,
   );
-  Future<Result<List<(Product?, double)>>> productChildrenSum(
+  Future<Result<List<(Product?, double, num)>>> productChildrenSum(
     DateTime? dateFrom,
     DateTime? dateTo,
     bool income,

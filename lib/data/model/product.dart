@@ -4,6 +4,7 @@ import 'package:transactions/data/model/entity.dart';
 import 'package:transactions/data/model/to_many.dart';
 import 'package:transactions/data/model/to_one.dart';
 import 'package:transactions/data/model/transaction_part.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class Product extends StrongEntity {
   Product({
@@ -48,7 +49,7 @@ class Product extends StrongEntity {
     lactoseFree: json["lactose_free"],
     glutenFree: json["gluten_free"],
     favorite: json["favorite"] ?? false,
-    color: Color(json["color"] ?? Colors.grey.toARGB32()),
+    color: json["color"] != null ? Color(json["color"]) : null,
     transactionParts: ToMany.fromJson(
       json["transaction_parts"],
       TransactionPart.fromJson,
@@ -73,7 +74,7 @@ class Product extends StrongEntity {
   bool? lactoseFree;
   bool? glutenFree;
   bool favorite;
-  Color color;
+  Color? color;
 
   ToOne<Company> _producer;
   Company? get producer => _producer.entity;
@@ -113,7 +114,7 @@ class Product extends StrongEntity {
       'gluten_free': glutenFree,
       'transaction_parts': _transactionParts.toJson(),
       'children': _children.toJson(),
-      'color': color.toARGB32(),
+      'color': color?.toARGB32(),
     };
     a.addEntries([_producer.toJson("producer"), _parent.toJson("parent")]);
     return a;
@@ -130,4 +131,39 @@ class Product extends StrongEntity {
   @override
   String get displayShort =>
       "${producer != null ? "${producer!.name} " : ""}$name";
+
+  IconData? get iconData => switch (name) {
+    "Lebensmittel" => Symbols.fork_spoon,
+    "Transport & Mobilität" => Symbols.directions_car,
+    "Technik, Digitales & Equipment" => Symbols.devices_other,
+    "Finanzen" => Symbols.money_bag,
+    "Taschengeld" => Symbols.money_bag,
+    "Kindergeld" => Symbols.account_balance,
+    "Semesterbeitrag" => Symbols.account_balance,
+    "Freizeit & Unterhaltung" => Symbols.celebration,
+    "Gebrauchsgegenstände" => Symbols.cases,
+    "Kleidung" => Symbols.apparel,
+    "Dienstleistungen" => Symbols.concierge,
+    "Toilette" => Symbols.wc,
+    "Haushalt" => Symbols.house,
+    "Wohnen & Haushalt" => Symbols.house,
+    "Körper & Gesundheit" => Symbols.accessibility,
+    "Hygiene" => Symbols.clean_hands,
+    "Medizin" => Symbols.mixture_med,
+    "Pflaster" => Symbols.healing,
+    "Super Bleifrei" => Symbols.local_gas_station,
+    "Super E10" => Symbols.local_gas_station,
+    "Diesel" => Symbols.local_gas_station,
+    "Parken" => Symbols.parking_sign,
+    "Mobilfunk" => Symbols.android_cell_dual_4_bar,
+    "Tickets & Eintritte" => Symbols.confirmation_number,
+    "Konzerte & Festivals" => Symbols.stadium,
+    "Eintritt Kino" => Symbols.theaters,
+    "Eintritt Freizeitpark" => Symbols.attractions,
+    "Streamingdienste & Abonnements" => Symbols.music_cast,
+    "Buch" => Symbols.book_2,
+    "Basteln & Werkeln" => Symbols.handyman,
+    "Server & Domains" => Symbols.dns,
+    String() => Icons.category,
+  };
 }

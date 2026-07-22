@@ -13,4 +13,13 @@ abstract final class AppTheme {
     colorScheme: MaterialTheme.darkScheme(),
     inputDecorationTheme: InputDecorationTheme(border: OutlineInputBorder()),
   );
+
+  static final List<Color> pieChartColors = [
+    for (var i = 0.0; i <= 1.0; i += 0.1)
+      HSVColor.lerp(
+        HSVColor.fromColor(MaterialTheme.darkScheme().primaryContainer),
+        HSVColor.fromColor(MaterialTheme.darkScheme().secondary),
+        i,
+      )!.toColor(),
+  ];
 }

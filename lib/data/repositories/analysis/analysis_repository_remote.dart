@@ -179,6 +179,7 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
     DateTime? dateFrom,
     DateTime? dateTo,
     bool income,
+    Product? product,
   ) {
     return apiService
         .get(
@@ -187,6 +188,7 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
             if (dateFrom != null) "dateFrom": dateFrom.toIso8601String(),
             if (dateTo != null) "dateTo": dateTo.toIso8601String(),
             if (income) "income": 1,
+            if (product != null) "product": product.id,
           },
         )
         .then((response) {
@@ -203,7 +205,7 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
   }
 
   @override
-  Future<Result<List<(Product?, double)>>> productChildrenSum(
+  Future<Result<List<(Product?, double, num)>>> productChildrenSum(
     DateTime? dateFrom,
     DateTime? dateTo,
     bool income,
@@ -226,38 +228,52 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
             if (c["sum"] is int) {
               c["sum"] = c["sum"].toDouble();
             }
+            if (c["count"] is num) {
+            } else if (c["count"] is String) {
+              c["count"] = int.parse(c["count"]);
+            } else {
+              c["count"] = 0;
+            }
             if (c["product"] != null) {
               c["product"] = Product.fromJson(c["product"]);
             }
-            return (c["product"], double.parse(c["sum"])) as (Product?, double);
+            if (parent != null) {
+              c["product"].parent = parent;
+            }
+            return (c["product"], double.parse(c["sum"]), c["count"])
+                as (Product?, double, int);
           }).toList();
           res.sort((a, b) => b.$2.abs().compareTo(a.$2.abs()));
 
           if (top != null) {
-            var otherSum = res
+            var (otherSum, otherCount) = res
                 .where((element) => element.$1 != null)
                 .skip(top)
                 .fold(
-                  0.0,
-                  (previousValue, element) => previousValue + element.$2,
+                  (0.0, 0 as num),
+                  (previousValue, element) => (
+                    previousValue.$1 + element.$2,
+                    previousValue.$2 + element.$3,
+                  ),
                 );
             var noProd = res
                 .take(top)
                 .firstWhere((element) => element.$1 == null);
             if (noProd != null) {
               otherSum += noProd.$2;
+              otherCount += noProd.$3;
             }
             res = res.where((element) => element.$1 != null).take(top).toList();
-            res.add((null, otherSum));
+            res.add((null, otherSum, otherCount));
           }
 
-          return Result<List<(Product?, double)>>.ok(
-            res as List<(Product?, double)>,
+          return Result<List<(Product?, double, int)>>.ok(
+            res as List<(Product?, double, int)>,
           );
         })
         .catchError((err) {
           print(err);
-          return Result<List<(Product?, double)>>.error(Exception(err));
+          return Result<List<(Product?, double, int)>>.error(Exception(err));
         });
   }
 }
