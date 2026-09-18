@@ -4,7 +4,7 @@ import 'package:transactions/utils/result.dart';
 
 abstract class AnalysisRepository {
   Future<Result<double>> getSum(DateTime? dateFrom, DateTime? dateTo);
-  Future<Result<List<(TransactionPartner, double)>>> getCredits();
+  Future<Result<List<(TransactionPartner?, double)>>> getCredits();
   Future<Result<List<(String, double)>>> getPartnersPie(bool positive);
   Future<Result<List<(DateTime, double)>>> getAggregateDaily(
     DateTime? dateFrom,

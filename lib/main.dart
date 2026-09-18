@@ -1,3 +1,4 @@
+import 'package:auto_hyphenating_text/auto_hyphenating_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:material_duration_picker/material_duration_picker.dart';

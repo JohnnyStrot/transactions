@@ -296,7 +296,7 @@ class _IntervalSumsState extends State<IntervalSums> {
                         Row(
                           spacing: 2,
                           children: [
-                            for (var (p, d, n) in data)
+                            for (var (p, d, _) in data)
                               Expanded(
                                 flex: d.abs().ceil(),
                                 child: Container(

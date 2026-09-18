@@ -34,30 +34,35 @@ class AnalysisRepositoryRemote implements AnalysisRepository {
         });
   }
 
-  Result<List<(TransactionPartner, double)>> _mapPartnerValues(
+  Result<List<(TransactionPartner?, double)>> _mapPartnerValues(
     dynamic response,
   ) {
     var res = jsonDecode(response.body);
 
-    return Result<List<(TransactionPartner, double)>>.ok(
-      (res as List<dynamic>)
-          .map<(TransactionPartner, double)>(
-            (c) => (
-              TransactionPartner.fromJson(c["transactionPartner"]),
-              double.parse(c["value"]),
-            ),
-          )
-          .toList(),
+    return Result<List<(TransactionPartner?, double)>>.ok(
+      (res as List<dynamic>).map<(TransactionPartner?, double)>((c) {
+        var val = c["value"] is String
+            ? double.parse(c["value"])
+            : c["value"] is int
+            ? c["value"].toDouble()
+            : c["value"] is double
+            ? c["value"]
+            : 0;
+        return c["transactionPartner"] != null &&
+                c["transactionPartner"]["id"] != null
+            ? (TransactionPartner.fromJson(c["transactionPartner"]), val)
+            : (null, val);
+      }).toList(),
     );
   }
 
   @override
-  Future<Result<List<(TransactionPartner, double)>>> getCredits() async {
+  Future<Result<List<(TransactionPartner?, double)>>> getCredits() async {
     return await apiService
         .get("analysis/credits")
         .then(_mapPartnerValues)
         .catchError((err) {
-          return Result<List<(TransactionPartner, double)>>.error(
+          return Result<List<(TransactionPartner?, double)>>.error(
             Exception(err),
           );
         });

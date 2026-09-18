@@ -30,10 +30,10 @@ class DashboardViewmodel with ChangeNotifier {
     });
     repository.getCredits().then((res) {
       switch (res) {
-        case Ok<List<(TransactionPartner, double)>>():
+        case Ok<List<(TransactionPartner?, double)>>():
           credits = res.value;
           notifyListeners();
-        case Error<List<(TransactionPartner, double)>>():
+        case Error<List<(TransactionPartner?, double)>>():
           debugPrint(res.error.toString());
       }
     });
@@ -108,7 +108,7 @@ class DashboardViewmodel with ChangeNotifier {
 
   double? sumTotal;
   double? sum30days;
-  List<(TransactionPartner, double)>? credits;
+  List<(TransactionPartner?, double)>? credits;
   List<(String, double)>? piePositive;
   List<(String, double)>? pieNegative;
   List<(DateTime, double)>? aggregateDaily;

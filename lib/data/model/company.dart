@@ -7,6 +7,7 @@ class Company extends StrongEntity {
   Company({
     required this.id,
     this.name = "",
+    this.logo = "",
     required ToMany<Product> products,
     required ToMany<TransactionPartner> subsidiaries,
   }) : _products = products,
@@ -15,6 +16,7 @@ class Company extends StrongEntity {
   factory Company.fromJson(Map<String, dynamic> json) => Company(
     id: json['id'],
     name: (json['name'] ?? "") as String,
+    logo: (json['logo'] ?? "") as String,
     products: ToMany.fromJson(json["products"], Product.fromJson),
     subsidiaries: ToMany.fromJson(
       json["subsidiaries"],
@@ -25,6 +27,7 @@ class Company extends StrongEntity {
   @override
   int id;
   String name;
+  String logo;
 
   ToMany<Product> _products;
   List<Product> get products => _products.entities;
@@ -37,6 +40,7 @@ class Company extends StrongEntity {
     var a = <String, dynamic>{
       'id': id,
       'name': name,
+      'logo': logo,
       'products': _products.toJson(),
       'subsidiaries': _subsidiaries.toJson(),
     };

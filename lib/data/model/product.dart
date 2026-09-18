@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:transactions/data/model/company.dart';
 import 'package:transactions/data/model/entity.dart';
@@ -5,6 +7,7 @@ import 'package:transactions/data/model/to_many.dart';
 import 'package:transactions/data/model/to_one.dart';
 import 'package:transactions/data/model/transaction_part.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:transactions/utils/double_to_string_extension.dart';
 
 class Product extends StrongEntity {
   Product({
@@ -132,7 +135,22 @@ class Product extends StrongEntity {
   String get displayShort =>
       "${producer != null ? "${producer!.name} " : ""}$name";
 
-  IconData? get iconData => switch (name) {
+  String get productPackage => [
+    if (unit.isNotEmpty || size != null)
+      "${size?.toReadableString() ?? ""}$unit",
+    if (package.isNotEmpty) package,
+  ].join(" ");
+
+  String get productPackageShort => [
+    if (unit.isNotEmpty || size != null)
+      "${size?.toReadableString() ?? ""}$unit",
+    if (package.isNotEmpty) package.substring(0, min(4, package.length)),
+  ].join(" ");
+
+  String get productNamePackage =>
+      "$name${productPackage.isNotEmpty ? " ($productPackage)" : ""}";
+
+  IconData get iconData => switch (name) {
     "Lebensmittel" => Symbols.fork_spoon,
     "Transport & Mobilität" => Symbols.directions_car,
     "Technik, Digitales & Equipment" => Symbols.devices_other,

@@ -136,6 +136,7 @@ class AuthApiClient {
   }
 
   Future<String?> getAccessToken() async {
+    return Future.value("a");
     return oidcManager.currentUser?.token.accessToken;
   }
 

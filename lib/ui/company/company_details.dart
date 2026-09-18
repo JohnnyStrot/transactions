@@ -73,6 +73,12 @@ class _CompanyDetailsState
                       border: UnderlineInputBorder(),
                     ),
                   ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    initialValue: company.logo,
+                    onChanged: (value) => company.logo = value,
+                    decoration: InputDecoration(label: Text("Logo (Link)")),
+                  ),
                 ],
               ),
             ),

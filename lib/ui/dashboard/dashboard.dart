@@ -29,8 +29,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            GoRouter.of(context).push("${Routes.transactions}${Routes.create}"),
+        onPressed: () => GoRouter.of(context).push(Routes.transactionsCapture),
         child: Icon(Icons.playlist_add),
       ),
       body: ListenableBuilder(
@@ -122,7 +121,9 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 Expanded(
                                   flex: 3,
-                                  child: Text(partner.displayShort),
+                                  child: Text(
+                                    partner?.displayShort ?? "Unbekannt",
+                                  ),
                                 ),
                               ],
                             ),

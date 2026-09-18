@@ -5,4 +5,8 @@ import 'package:transactions/utils/result.dart';
 
 abstract class TransactionRepository extends DataRepository<Transaction> {
   Future<Result<TransactionPart>> createPart();
+  Future<Result<Transaction>> saveTransaction(
+    Transaction entity, {
+    List<TransactionPartContent>? content,
+  });
 }

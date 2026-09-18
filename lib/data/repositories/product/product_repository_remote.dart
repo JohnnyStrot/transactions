@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:transactions/data/model/product.dart';
+import 'package:transactions/data/model/transaction_partner.dart';
 import 'package:transactions/data/repositories/product/product_repository.dart';
 import 'package:transactions/data/repositories/data_repository_remote.dart';
 import 'package:transactions/utils/result.dart';
@@ -31,6 +32,45 @@ class ProductRepositoryRemote extends DataRepositoryRemote<Product>
         })
         .catchError((err) {
           return Result<List<Product>>.error(Exception(err));
+        });
+  }
+
+  @override
+  Future<Result<List<(Product, double?)>>> searchWithPrice(
+    int page,
+    TransactionPartner? partner,
+    String? product,
+    String? producer,
+  ) async {
+    final pageSize = 20;
+    return await apiService
+        .get(
+          "$typeApiEndpoint/search-with-price",
+          params: {
+            "skip": (page - 1) * pageSize,
+            "take": pageSize,
+            "name": ?product,
+            "partner": ?(partner?.id),
+            "company": ?(partner?.company?.id),
+            "producer": ?producer,
+          },
+        )
+        .then((response) {
+          var res = jsonDecode(response.body);
+
+          return Result<List<(Product, double?)>>.ok(
+            (res as List<dynamic>)
+                .map<(Product, double?)>(
+                  (c) => (
+                    Product.fromJson(c["product"]),
+                    double.tryParse(c["sum"] ?? ""),
+                  ),
+                )
+                .toList(),
+          );
+        })
+        .catchError((err) {
+          return Result<List<(Product, double?)>>.error(Exception(err));
         });
   }
 }

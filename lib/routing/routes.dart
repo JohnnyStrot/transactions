@@ -8,10 +8,12 @@ abstract final class Routes {
 
   static const data = '/$dataRelative';
   static const transactions = '$data/$transactionsRelative';
+  static const transactionsCapture = '$transactions/$captureRelative';
   static const products = '$data/$productsRelative';
   static const transactionPartners = '$data/$transactionPartnersRelative';
   static const companies = '$data/$companiesRelative';
 
+  static const captureRelative = 'capture';
   static const createRelative = 'create';
   static const analysisRelative = 'analysis';
   static const dataRelative = 'data';

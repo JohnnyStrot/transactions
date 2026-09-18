@@ -6,8 +6,8 @@ import 'package:transactions/ui/details/details_view.dart';
 import 'package:flutter/material.dart';
 import 'package:transactions/ui/product/product_details_viewmodel.dart';
 import 'package:transactions/ui/product/product_picker.dart';
-import 'package:transactions/ui/product/product_select.dart';
 import 'package:transactions/utils/double_to_string_extension.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 class ProductDetails
     extends DetailsView<Product, ProductDetails, ProductDetailsViewmodel> {
@@ -74,6 +74,24 @@ class _ProductDetailsState
                           ? Colors.amber
                           : ColorScheme.of(context).onPrimaryContainer,
                     ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      var c = await showColorPickerDialog(
+                        context,
+                        product.color ?? Colors.grey,
+                        pickersEnabled: <ColorPickerType, bool>{
+                          ColorPickerType.primary: true,
+                          ColorPickerType.accent: false,
+                          ColorPickerType.wheel: true,
+                        },
+                      );
+                      setState(() => product.color = c);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: product.color,
+                    ),
+                    child: SizedBox(height: 6),
                   ),
                 ],
               ),

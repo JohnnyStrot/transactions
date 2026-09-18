@@ -34,4 +34,23 @@ class TransactionRepositoryRemote extends DataRepositoryRemote<Transaction>
           return Result<TransactionPart>.error(Exception(err));
         });
   }
+
+  @override
+  Future<Result<Transaction>> saveTransaction(
+    Transaction entity, {
+    List<TransactionPartContent>? content,
+  }) async {
+    var json = entity.toJson();
+    json["transactionParts"] = content?.map((c) => c.toJson()).toList();
+    return await apiService
+        .put("$typeApiEndpoint/${entity.id}", json)
+        .then((response) {
+          return Result<Transaction>.ok(
+            Transaction.fromJson(jsonDecode(response.body)),
+          );
+        })
+        .catchError((err) {
+          return Result<Transaction>.error(Exception(err));
+        });
+  }
 }

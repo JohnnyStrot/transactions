@@ -15,6 +15,8 @@ import 'package:transactions/ui/product/product_details_viewmodel.dart';
 import 'package:transactions/ui/product/product_details.dart';
 import 'package:transactions/ui/product/product_list.dart';
 import 'package:transactions/ui/product/product_list_viewmodel.dart';
+import 'package:transactions/ui/transaction/transaction_capture.dart';
+import 'package:transactions/ui/transaction/transaction_capture_viewmodel.dart';
 import 'package:transactions/ui/transaction/transaction_details.dart';
 import 'package:transactions/ui/transaction/transaction_details_viewmodel.dart';
 import 'package:transactions/ui/transaction/transaction_list.dart';
@@ -145,6 +147,17 @@ final dataRoutes = [
           );
           vm.createEntity.execute();
           return TransactionDetails(viewmodel: vm);
+        },
+      ),
+      GoRoute(
+        path: Routes.captureRelative,
+        builder: (context, state) {
+          TransactionCaptureViewmodel vm = TransactionCaptureViewmodel(
+            repository: context.read(),
+            partnerRepository: context.read(),
+            productRepository: context.read(),
+          );
+          return TransactionCapture(viewmodel: vm);
         },
       ),
       GoRoute(

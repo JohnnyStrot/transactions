@@ -3,16 +3,46 @@ import 'package:transactions/data/model/product.dart';
 import 'package:transactions/data/model/to_one.dart';
 import 'package:transactions/data/model/transaction.dart';
 
-class TransactionPart extends StrongEntity {
+class TransactionPartContent {
+  ToOne<Product> _product;
+  Product? get product => _product.entity;
+  set product(Product? p) {
+    _product.entity = p;
+  }
+
+  String purpose;
+  double value;
+  double? amount;
+
+  TransactionPartContent({
+    Product? product,
+    this.purpose = "",
+    this.value = 0.0,
+    this.amount,
+  }) : _product = ToOne(entity: product);
+
+  Map<String, dynamic> toJson() {
+    var a = <String, dynamic>{
+      'purpose': purpose,
+      'amount': amount,
+      'value': value,
+    };
+    a.addEntries([_product.toJson("product")]);
+    return a;
+  }
+}
+
+class TransactionPart extends TransactionPartContent implements StrongEntity {
   TransactionPart({
     required this.id,
-    this.purpose = "",
-    this.amount,
-    required this.value,
+    super.purpose,
+    super.amount,
+    required super.value,
     required ToOne<Transaction> transaction,
     required ToOne<Product> product,
-  }) : _transaction = transaction,
-       _product = product;
+  }) : _transaction = transaction {
+    _product = product;
+  }
 
   factory TransactionPart.fromJson(Map<String, dynamic> json) {
     return TransactionPart(
@@ -29,31 +59,15 @@ class TransactionPart extends StrongEntity {
 
   @override
   int id;
-  double value;
-  double? amount;
-  String purpose;
 
   ToOne<Transaction> _transaction;
   Transaction? get transaction => _transaction.entity;
 
-  ToOne<Product> _product;
-  Product? get product => _product.entity;
-  set product(Product? p) {
-    _product.entity = p;
-  }
-
   @override
   Map<String, dynamic> toJson() {
-    var a = <String, dynamic>{
-      'id': id,
-      'purpose': purpose,
-      'amount': amount,
-      'value': value,
-    };
-    a.addEntries([
-      _transaction.toJson("transaction"),
-      _product.toJson("product"),
-    ]);
+    var a = super.toJson();
+    a["id"] = id;
+    a.addEntries([_transaction.toJson("transaction")]);
     return a;
   }
 
